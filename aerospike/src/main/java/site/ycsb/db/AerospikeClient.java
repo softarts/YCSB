@@ -21,10 +21,7 @@ import com.aerospike.client.AerospikeException;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
 import com.aerospike.client.Record;
-import com.aerospike.client.policy.ClientPolicy;
-import com.aerospike.client.policy.Policy;
-import com.aerospike.client.policy.RecordExistsAction;
-import com.aerospike.client.policy.WritePolicy;
+import com.aerospike.client.policy.*;
 import site.ycsb.ByteArrayByteIterator;
 import site.ycsb.ByteIterator;
 import site.ycsb.DBException;
@@ -70,16 +67,18 @@ public class AerospikeClient extends site.ycsb.DB {
     int timeout = Integer.parseInt(props.getProperty("as.timeout",
         DEFAULT_TIMEOUT));
 
-    readPolicy.timeout = timeout;
-    insertPolicy.timeout = timeout;
-    updatePolicy.timeout = timeout;
-    deletePolicy.timeout = timeout;
+    readPolicy.totalTimeout = timeout;
+    insertPolicy.totalTimeout = timeout;
+    updatePolicy.totalTimeout = timeout;
+    deletePolicy.totalTimeout = timeout;
 
     ClientPolicy clientPolicy = new ClientPolicy();
 
     if (user != null && password != null) {
       clientPolicy.user = user;
       clientPolicy.password = password;
+      clientPolicy.authMode = AuthMode.EXTERNAL_INSECURE;
+      clientPolicy.tlsPolicy = new TlsPolicy();
     }
 
     try {
